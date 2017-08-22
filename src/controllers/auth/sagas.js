@@ -1,6 +1,6 @@
 import { takeLatest, all, fork } from 'redux-saga/effects';
 
-import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_LOGIN_SUCCESS, AUTH_GET_PROFILE, loginFailed, loginSuccess, logout } from './auth-actions';
+import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_LOGIN_SUCCESS, AUTH_GET_PROFILE, loginFailed, loginSuccess, logout, getProfile } from './auth-actions';
 
 import { processLogic, registerAction } from '../../helpers/saga-helper';
 import * as api from './auth-api';
@@ -11,18 +11,14 @@ const login = processLogic({
         return api.login(username, password);
     },
     errorAction: ( err => loginFailed( err ) ),
-    nextAction: (({ token }) => loginSuccess(token))
+    nextAction: (({ token }) => loginSuccess(token)),
 });
 
 const loadProfile = processLogic({
     execFn: ( state ) => {
-
-        let authState = getAuth( state );
-
-        console.log('authState.token ', authState.token );
-        
-        return api.getProfile( authState.token );
-    }
+        return api.getProfile( getAuth( state ).token );
+    },
+    nextAction: ((profile ) => getProfile( profile )),
 });
 
 function* authSagas() {

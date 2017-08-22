@@ -16,6 +16,14 @@ function* execute(action, { execFn, nextAction, errorAction, timeout, timeoutAct
         throw new Error('\'execFn\' is required');
     }
 
+    if (!nextAction || typeof nextAction !== 'function') {
+        throw new Error('\'nextAction\' is required');
+    }
+
+    if ( cancelSignal && ( !cancelAction || typeof cancelAction !== 'function' )) {
+        throw new Error('\'cancelAction\' is required');
+    }
+    
     try {
 
         let state = yield select();
@@ -41,8 +49,6 @@ function* execute(action, { execFn, nextAction, errorAction, timeout, timeoutAct
             });
         }
 
-        if (!nextAction && typeof nextAction === 'function') return;
-
         let nextAct = nextAction( data );
 
         if ( !nextAct || !nextAct.type ) return;
@@ -64,7 +70,6 @@ function* execute(action, { execFn, nextAction, errorAction, timeout, timeoutAct
 }
 
 export function registerAction( actionSignal, fn ) {
-    console.log('registerAction globalActionMap ', actionSignal );
     globalActionMap[ actionSignal] = fn;
 }
 

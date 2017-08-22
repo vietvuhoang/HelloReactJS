@@ -5,6 +5,14 @@ const SEPARATOR = ':';
 const BASIC = 'Basic ';
 const BEARER = 'Bearer ';
 
+function wait(timeout) {
+    return new Promise(resolve => {
+        setTimeout(function () {
+            resolve();
+        }, timeout);
+    });
+}
+
 function login(username, password) {
 
     let options = {
@@ -15,10 +23,13 @@ function login(username, password) {
         }
     };
 
-    return Request(options).then(res => Promise.resolve(JSON.parse(res))).catch(err => Promise.reject(err));
+    return wait( 1000 )
+            .then(() => Request(options))
+            .then(res => Promise.resolve(JSON.parse(res)))
+            .catch(err => Promise.reject(err));;
 }
 
-function getProfile( token ) {
+function getProfile(token) {
 
     let options = {
         method: 'GET',
@@ -27,8 +38,6 @@ function getProfile( token ) {
             Authorization: `${BEARER}${token}`
         }
     };
-
-    console.log('>> ', token );
 
     return Request(options).then(res => Promise.resolve(JSON.parse(res))).catch(err => Promise.reject(err));
 }

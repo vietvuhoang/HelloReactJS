@@ -17,7 +17,6 @@ export function login(username, password) {
 }
 
 export function loginSuccess(token) {
-    console.log('AUTH_LOGIN_SUCCESS');
     return {
         type: AUTH_LOGIN_SUCCESS,
         payload: {
@@ -42,8 +41,11 @@ export function logout() {
     }
 }
 
-export function getProfile() {
+export function getProfile( profile ) {
     return {
-        type: AUTH_GET_PROFILE
+        type: AUTH_GET_PROFILE,
+        payload: {
+            profile
+        }
     }
 }

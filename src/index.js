@@ -5,13 +5,14 @@ import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
 import { compose, applyMiddleware, createStore, combineReducers } from 'redux';
-import { persistStore, autoRehydrate } from 'redux-persist';
+import { persistStore, autoRehydrate, createTransform } from 'redux-persist';
 import 'babel-polyfill';
 
 import localForage from 'localforage';
 import createSagaMiddleware from 'redux-saga';
-import { authSagas, authReducer } from './controllers/auth';
+import { authSagas, authReducer, authStates } from './controllers/auth';
 import { Provider } from 'react-redux';
+import { createBlacklistFilter } from 'redux-persist-transform-filter';
 
 const rootReducer = combineReducers({
     auth: authReducer
@@ -29,11 +30,25 @@ const store = createStore(
     )
 )
 
+const pendingTransform = createTransform(
+    (state) => {
+        if (!state.state) return { state: authStates.AUTH_NONE };
+        else if (state.state && state.state === authStates.AUTH_PENDING) return { state: authStates.AUTH_NONE };
+        else return state;
+    },
+    (state) => {
+        if (!state.state) return { state: authStates.AUTH_NONE };
+        else if (state.state && state.state === authStates.AUTH_PENDING) return { state: authStates.AUTH_NONE };
+        else return state;
+    },
+    { whitelist: 'auth' }
+)
+
 // begin periodically persisting the store
 
-persistStore( store, { storage: localForage, keyPrefix  : 'demoAuth'});
+persistStore(store, { storage: localForage, keyPrefix: 'demoAuth', transforms: [pendingTransform] });
 
-sagaMiddleware.run( authSagas, store.getState );
+sagaMiddleware.run(authSagas, store.getState);
 
 ReactDOM.render(<Provider store={store}><App /></Provider>, document.getElementById('root'));
 registerServiceWorker();
