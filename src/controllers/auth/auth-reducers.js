@@ -6,22 +6,26 @@ const initialState = {
 }
 
 export default function (state = initialState, action) {
+    switch ( action.type) {
+        case authActions.AUTH_LOGIN:
+            return {
+                state: authStates.AUTH_PENDING
+            };
+        case authActions.AUTH_LOGIN_SUCCESS:
+            return {
+                state: authStates.AUTH_LOGGED_IN,
+                token: action.payload.token
+            };
+        case authActions.AUTH_GET_PROFILE:
+            return { ...state, state: authStates.AUTH_READY, currentUser: action.payload.profile };
+        case authActions.AUTH_LOGIN_FAILED:
+            return { ...initialState, error : action.payload.error }        
+        case authActions.AUTH_LOGOUT:   
+            return initialState;         
+        default:
+            break;        
+    };
 
-    if ( action.type === authActions.AUTH_LOGIN ) {
-        return {
-            state: authStates.AUTH_PENDING
-        };
-    } else if ( action.type === authActions.AUTH_LOGIN_SUCCESS ) {
-        return {
-            state: authStates.AUTH_LOGGED_IN,
-            token: action.payload.token
-        };
-    } else if ( action.type === authActions.AUTH_GET_PROFILE ) {
-        return { ...state, state: authStates.AUTH_READY, currentUser: action.payload.profile };
-    } else if ( action.type === authActions.AUTH_LOGIN_FAILED ) {
-        return { ...initialState, error : action.payload.error };
-    } else {
-        return initialState;
-    }
-
+    return initialState;
+    
 }
