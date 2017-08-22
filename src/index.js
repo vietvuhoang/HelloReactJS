@@ -5,17 +5,19 @@ import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
 import { compose, applyMiddleware, createStore, combineReducers } from 'redux';
-import { persistStore, autoRehydrate, createTransform } from 'redux-persist';
+import { persistStore, autoRehydrate } from 'redux-persist';
 import 'babel-polyfill';
 
 import localForage from 'localforage';
 import createSagaMiddleware from 'redux-saga';
-import { authSagas, authReducer, authStates } from './controllers/auth';
+import { authSagas, authReducer, authTransform, AUTH_MOD_NAME } from './controllers/auth';
 import { Provider } from 'react-redux';
 
-const rootReducer = combineReducers({
-    auth: authReducer
-});
+const rootReducerObj = {};
+
+rootReducerObj[ AUTH_MOD_NAME ] = authReducer;
+
+const rootReducer = combineReducers( rootReducerObj );
 
 // create the saga middleware
 const sagaMiddleware = createSagaMiddleware();
@@ -27,25 +29,9 @@ const store = createStore(
         applyMiddleware(sagaMiddleware),
         autoRehydrate()
     )
-)
+);
 
-const pendingTransform = createTransform(
-    (state) => {
-        if (!state.state) return { state: authStates.AUTH_NONE };
-        else if (state.state && state.state === authStates.AUTH_PENDING) return { state: authStates.AUTH_NONE };
-        else return state;
-    },
-    (state) => {
-        if (!state.state) return { state: authStates.AUTH_NONE };
-        else if (state.state && state.state === authStates.AUTH_PENDING) return { state: authStates.AUTH_NONE };
-        else return state;
-    },
-    { whitelist: 'auth' }
-)
-
-// begin periodically persisting the store
-
-persistStore(store, { storage: localForage, keyPrefix: 'demoAuth', transforms: [pendingTransform] });
+persistStore(store, { storage: localForage, keyPrefix: 'demoAuth', transforms: [authTransform] });
 
 sagaMiddleware.run(authSagas, store.getState);
 
