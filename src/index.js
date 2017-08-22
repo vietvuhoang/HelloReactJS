@@ -12,7 +12,6 @@ import localForage from 'localforage';
 import createSagaMiddleware from 'redux-saga';
 import { authSagas, authReducer, authStates } from './controllers/auth';
 import { Provider } from 'react-redux';
-import { createBlacklistFilter } from 'redux-persist-transform-filter';
 
 const rootReducer = combineReducers({
     auth: authReducer

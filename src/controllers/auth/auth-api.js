@@ -26,7 +26,7 @@ function login(username, password) {
     return wait( 1000 )
             .then(() => Request(options))
             .then(res => Promise.resolve(JSON.parse(res)))
-            .catch(err => Promise.reject(err));;
+            .catch(err => Promise.reject(err));
 }
 
 function getProfile(token) {

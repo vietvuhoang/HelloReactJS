@@ -1,6 +1,6 @@
 import { takeLatest, all, fork } from 'redux-saga/effects';
 
-import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_LOGIN_SUCCESS, AUTH_GET_PROFILE, loginFailed, loginSuccess, logout, getProfile } from './auth-actions';
+import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_LOGIN_SUCCESS, loginFailed, loginSuccess, logout, getProfile } from './auth-actions';
 
 import { processLogic, registerAction } from '../../helpers/saga-helper';
 import * as api from './auth-api';
